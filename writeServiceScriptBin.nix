@@ -44,13 +44,14 @@ let
         ''
         ++ lib.optional (env != null) env
         ++ lib.optional (setup != null) ''
-          (${setup}) 2>&1 | \
-            ${moreutils}/bin/ts ${colorize "${name} (setup)>"}
+          (${setup}) 2>&1 | ${moreutils}/bin/pee \
+            "${moreutils}/bin/ts ${colorize "${name} (setup)>"}" \
+            '${ansifilter}/bin/ansifilter > ../setup.log'
         ''
         ++ lib.optional (run != null) ''
           (${run}) 2>&1 | ${moreutils}/bin/pee \
             "${moreutils}/bin/ts ${colorize "${name}>"}${consoleFilterPipe}" \
-            '${ansifilter}/bin/ansifilter > ../log'${lib.optionalString (!isLast) " &"}
+            '${ansifilter}/bin/ansifilter > ../run.log'${lib.optionalString (!isLast) " &"}
         ''
         ++ lib.optional (run == null && isLast) ''
           ${coreutils}/bin/sleep infinity
